@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REBASED WAITING ROOM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* Der gesamte CSS-Code bleibt unverändert */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            color: #00D4FF;
+            text-shadow: 0 0 15px #00D4FF, 0 0 30px #00D4FF;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        #countdown {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            margin: 15px 0;
+            color: #00D4FF;
+            text-shadow: 0 0 5px #00D4FF;
+        }
+        #progress-container {
+            width: 70%;
+            background-color: #0F0F1A;
+            border-radius: 12px;
+            padding: 6px;
+            margin: 20px 0;
+            border: 2px solid #00D4FF;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 24px;
+            background: #00D4FF;
+            border-radius: 8px;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px #00D4FF;
+        }
+        #frog {
+            font-size: 1.5rem;
+            position: absolute;
+            top: -8px;
+            left: 0;
+            color: #00D4FF;
+            text-shadow: 0 0 5px #00D4FF;
+            transition: left 1s linear;
+        }
+        #message {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            color: #E0E0E0;
+            display: none;
+            text-shadow: 0 0 5px #00D4FF;
+        }
+        #image {
+            display: none;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 12px;
+            border: 2px solid #00D4FF;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        #nickname-section, #game-buttons, #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
+            background: linear-gradient(145deg, #16213E, #1A1A2E);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), 0 8px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            margin: 20px 0;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        #memory-container {
+            max-width: 1000px;
+            padding: 25px 60px;
+        }
+        #game-buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+            width: auto;
+            padding: 15px;
+        }
+        #nickname-section:hover, #game-buttons:hover, #quiz-container:hover, #memory-container:hover, #whack-a-mole-container:hover, #snake-container:hover, #flappy-frog-container:hover, #full-ranking-container:hover, #top-10-container:hover {
+            transform: translateY(-5px);
+        }
+        #nickname-input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #00D4FF;
+            background-color: #1A1A2E;
+            color: #FFFFFF;
+            font-size: 1rem;
+            width: 70%;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #nickname-input:focus {
+            border-color: #90E0EF;
+            box-shadow: 0 0 10px rgba(144, 224, 239, 0.5);
+            outline: none;
+        }
+        #nickname-error {
+            color: #FF6B6B;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+        #submit-nickname, .game-button, #next-btn, .back-btn, #view-full-ranking, #play-button {
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            color: #1A1A2E;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            margin: 0;
+        }
+        #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #view-full-ranking:hover, #play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        .question, #score, #memory-score, #whack-a-mole-score, #snake-score, #flappy-frog-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00D4FF;
+            text-shadow: 0 0 5px #00D4FF;
+        }
+        #whack-a-mole-timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00D4FF;
+            text-shadow: 0 0 5px #00D4FF;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option {
+            background: #1A1A2E;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #00D4FF;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 1rem;
+        }
+        .option:hover {
+            background-color: #00D4FF;
+            transform: scale(1.05);
+            color: #1A1A2E;
+        }
+        #feedback {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: #90E0EF;
+        }
+        #memory-game {
+            display: grid;
+            grid-template-columns: repeat(8, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+            border: none;
+            background-color: transparent;
+            width: 100%;
+            max-width: 880px;
+        }
+        #whack-a-mole-container {
+            position: relative;
+            padding: 25px;
+        }
+        #whack-a-mole-game {
+            display: grid;
+            grid-template-columns: repeat(4, 120px);
+            gap: 15px;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+            width: 100%;
+            height: 550px;
+            background-color: #1A1A2E;
+            cursor: none;
+            box-sizing: border-box;
+        }
+        .mole-hole {
+            width: 120px;
+            height: 120px;
+            background-color: #1A1A2E;
+            border: 2px solid #00D4FF;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        .mole-hole img.target {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: none;
+        }
+        .mole-hole.active img.target {
+            display: block;
+        }
+        .memory-card {
+            width: 100px;
+            height: 100px;
+            background-color: #1A1A2E;
+            border: 2px solid #00D4FF;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0;
+            transition: transform 0.5s, box-shadow 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .memory-card:hover {
+            box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
+        }
+        .memory-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: none;
+        }
+        .memory-card.flipped img, .memory-card.matched img {
+            display: block;
+        }
+        .memory-card.flipped, .memory-card.matched {
+            background-color: #00D4FF;
+            transform: rotateY(180deg);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
+        }
+        .custom-cursor {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') no-repeat center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .custom-cursor.rotate {
+            animation: hammerRotate 0.3s ease-out;
+        }
+        @keyframes hammerRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+        #snake-container, #flappy-frog-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #snake-canvas {
+            border: 2px solid #00D4FF;
+            background-color: #1A1A2E;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: block;
+            margin: 0 auto;
+        }
+        #snake-back-btn, #memory-back-btn-end {
+            display: none;
+        }
+        #flappy-frog-canvas {
+            border: 2px solid #00D4FF;
+            background-color: #1A1A2E;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        #full-ranking-list, #top-10-list {
+            margin-top: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        #full-ranking-list li, #top-10-list li {
+            margin: 8px 0;
+            color: #E0E0E0;
+        }
+        #next-btn {
+            display: none;
+        }
+        #score {
+            display: none;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #1A1A2E;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s, opacity 0.3s;
+        }
+        .tab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        .tab.active {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+        }
+        .tab:not(.active) {
+            opacity: 0.6;
+        }
+        @media (max-width: 900px) {
+            #memory-game {
+                grid-template-columns: repeat(4, 80px);
+                max-width: 350px;
+            }
+            #memory-container {
+                padding: 20px 30px;
+                max-width: 410px;
+            }
+            .memory-card {
+                width: 80px;
+                height: 80px;
+            }
+            #whack-a-mole-game {
+                grid-template-columns: repeat(4, 80px);
+                width: 100%;
+                height: 400px;
+            }
+            .mole-hole {
+                width: 80px;
+                height: 80px;
+            }
+            .custom-cursor {
+                width: 64px;
+                height: 64px;
+            }
+            #snake-canvas {
+                width: 320px;
+                height: 320px;
+            }
+            #flappy-frog-canvas {
+                width: 320px;
+                height: 480px;
+            }
+            #nickname-input {
+                width: 100%;
+            }
+            #progress-container {
+                width: 80%;
+            }
+            #game-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
+                max-width: 100%;
+            }
+            .tab-container {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .tab {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>REBASED WAITING ROOM</h1>
+    </header>
+
+    <div id="countdown"></div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+        <div id="frog">🐸</div>
+    </div>
+    <p id="message">REBASED or naked skiing!</p>
+    <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
+    <div id="nickname-section">
+        <input type="text" id="nickname-input" placeholder="Enter your nickname..." maxlength="20">
+        <div id="nickname-error"></div>
+        <button id="submit-nickname" onclick="submitNickname()">Submit</button>
+    </div>
+    <div id="game-buttons" style="display: none;">
+        <button class="game-button" onclick="showSection('quiz')">Quiz</button>
+        <button class="game-button" onclick="showSection('memory')">Memory</button>
+        <button class="game-button" onclick="showSection('whack-a-mole')">Whack-a-Mole</button>
+        <button class="game-button" onclick="showSection('snake')">Snake</button>
+        <button class="game-button" onclick="showSection('flappy-frog')">Flappy Frog</button>
+    </div>
+
+    <div id="quiz-container" style="display: none;">
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div id="feedback"></div>
+        <button id="next-btn">Next Question</button>
+        <button class="back-btn" id="quiz-back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="quiz-back-btn-end" onclick="showSection('main')">Back</button>
+    </div>
+    <div id="score"></div>
+
+    <div id="memory-container" style="display: none;">
+        <div id="memory-game"></div>
+        <div id="memory-score"></div>
+        <button class="back-btn" id="memory-back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="memory-back-btn-end" onclick="showSection('main')">Back</button>
+    </div>
+
+    <div id="whack-a-mole-container" style="display: none;">
+        <div id="whack-a-mole-game"></div>
+        <div id="whack-a-mole-score">Score: 0</div>
+        <div id="whack-a-mole-timer">Time: 30s</div>
+        <div class="custom-cursor" id="custom-cursor"></div>
+        <button class="back-btn" id="whack-back-btn" onclick="showSection('main')">Back</button>
+    </div>
+
+    <div id="snake-container" style="display: none;">
+        <canvas id="snake-canvas" width="400" height="400"></canvas>
+        <div id="snake-score">Score: 0</div>
+        <button class="back-btn" id="snake-back-btn-during" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="snake-back-btn" onclick="showSection('main')">Back</button>
+    </div>
+
+    <div id="flappy-frog-container" style="display: none;">
+        <canvas id="flappy-frog-canvas" width="400" height="600"></canvas>
+        <div id="flappy-frog-score">Score: 0</div>
+        <button id="play-button" onclick="startFlappyGame()">Play</button>
+        <button class="back-btn" id="flappy-back-btn" onclick="showSection('main')">Back</button>
+    </div>
+
+    <div id="top-10-container" style="display: none;">
+        <h1>Top 10 Players</h1>
+        <div class="tab-container">
+            <div class="tab active" onclick="showTab('quiz')">Quiz</div>
+            <div class="tab" onclick="showTab('memory')">Memory</div>
+            <div class="tab" onclick="showTab('whack-a-mole')">Whack-a-Mole</div>
+            <div class="tab" onclick="showTab('snake')">Snake</div>
+            <div class="tab" onclick="showTab('flappy-frog')">Flappy Frog</div>
+        </div>
+        <ol id="top-10-list"></ol>
+        <button class="game-button" onclick="showSection('full-ranking')">Full Leaderboard</button>
+    </div>
+
+    <div id="full-ranking-container" style="display: none;">
+        <h1>Full Leaderboard</h1>
+        <ol id="full-ranking-list"></ol>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
+    </div>
+
+    <script>
+        console.log("Script loaded");
+
+        const targetDate = new Date("2025-03-31T23:59:59").getTime();
+        const startDate = new Date("2025-01-01T00:00:00").getTime();
+        const totalTime = targetDate - startDate;
+        const now = new Date().getTime();
+        const initialProgress = ((now - startDate) / totalTime) * 100;
+
+        const countdownElement = document.getElementById("countdown");
+        const messageElement = document.getElementById("message");
+        const imageElement = document.getElementById("image");
+        const progressBar = document.getElementById("progress-bar");
+        const frog = document.getElementById("frog");
+        const progressContainer = document.getElementById("progress-container");
+        let nickname = '';
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                progressContainer.style.display = "none";
+                messageElement.style.display = "block";
+                imageElement.style.display = "block";
+            } else {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                const progress = ((now - startDate) / totalTime) * 100;
+                progressBar.style.width = `${progress}%`;
+
+                const frogPosition = (progress / 100) * (progressContainer.offsetWidth - frog.offsetWidth);
+                frog.style.left = `${frogPosition}px`;
+            }
+        }
+
+        progressBar.style.width = `${initialProgress}%`;
+        const initialFrogPosition = (initialProgress / 100) * (progressContainer.offsetWidth - frog.offsetWidth);
+        frog.style.left = `${initialFrogPosition}px`;
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+
+        const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
+
+        function submitNickname() {
+            console.log("submitNickname called");
+            const input = document.getElementById("nickname-input");
+            const errorElement = document.getElementById("nickname-error");
+
+            if (!input) {
+                console.error("Nickname input not found");
+                return;
+            }
+
+            const inputValue = input.value.trim();
+            console.log("Nickname entered:", inputValue);
+
+            if (inputValue === "") {
+                errorElement.textContent = "Please enter a nickname.";
+                errorElement.style.display = "block";
+                console.log("Error: Empty nickname");
+                return;
+            }
+
+            if (badWords.some(word => inputValue.toLowerCase().includes(word))) {
+                errorElement.textContent = "Please choose a different nickname (inappropriate word detected).";
+                errorElement.style.display = "block";
+                console.log("Error: Inappropriate word detected");
+                return;
+            }
+
+            nickname = inputValue;
+            console.log("Nickname set:", nickname);
+
+            errorElement.style.display = "none";
+            document.getElementById("nickname-section").style.display = "none";
+            document.getElementById("game-buttons").style.display = "flex";
+            document.getElementById("top-10-container").style.display = "block";
+            showTab('quiz');
+            console.log("Switched to game selection");
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM fully loaded");
+            const nicknameInput = document.getElementById("nickname-input");
+            if (nicknameInput) {
+                nicknameInput.addEventListener("keypress", function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        console.log("Enter pressed");
+                        submitNickname();
+                    }
+                });
+            } else {
+                console.error("Nickname input not found on DOM load");
+            }
+        });
+
+        let quizScore = 0;
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            { question: "What does DeFi stand for?", options: ["Decentralized Finance", "Distributed Finance", "Digital Funding", "Decentralized Funding"], correct: 0 },
+            { question: "Which blockchain is most commonly associated with DeFi?", options: ["Bitcoin", "Ethereum", "Binance Smart Chain", "Solana"], correct: 1 },
+            { question: "What is a key feature of DeFi platforms?", options: ["Centralized control", "Permissionless access", "High fees", "Restricted access"], correct: 1 },
+            { question: "What is the purpose of a smart contract in DeFi?", options: ["To mine cryptocurrency", "To execute agreements automatically", "To store user data", "To create new tokens"], correct: 1 },
+            { question: "What is 'yield farming' in DeFi?", options: ["Mining new coins", "Lending assets to earn interest", "Trading NFTs", "Hacking smart contracts"], correct: 1 },
+            { question: "What is IOTA EVM?", options: ["A Layer 1 solution for IOTA", "A fully EVM-compatible Layer 2 solution for IOTA", "A new cryptocurrency", "A centralized exchange"], correct: 1 },
+            { question: "What is a key benefit of IOTA EVM for developers?", options: ["It supports only Move smart contracts", "It allows deployment of existing Solidity smart contracts", "It has no interoperability with other chains", "It requires rewriting all smart contracts"], correct: 1 },
+            { question: "What does IOTA Rebased introduce to the IOTA ecosystem?", options: ["Centralized governance", "Full programmability with MoveVM and EVM on Layer 1", "A new token", "Higher transaction fees"], correct: 1 },
+            { question: "What is the transaction speed capability of IOTA Rebased?", options: ["1,000 TPS", "10,000 TPS", "50,000+ TPS", "100 TPS"], correct: 2 },
+            { question: "What staking reward range does IOTA Rebased offer for $IOTA holders?", options: ["1-2% APY", "5-7% APY", "10-15% APY", "20-25% APY"], correct: 2 },
+            { question: "What key milestone was achieved with the IOTA Rebased vote in December 2024?", options: ["Approval by token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"], correct: 0 },
+            { question: "What new tool is being prepared for IOTA Rebased as part of the mainnet preparations in March 2025?", options: ["A new cryptocurrency", "A wallet extension and dashboard dApp", "A centralized exchange", "A hardware mining device"], correct: 1 },
+            { question: "What is a new feature included in the updated IOTA Rebased SDKs mentioned in March 2025?", options: ["Support for Bitcoin smart contracts", "Move IDE plugins and CLI enhancements", "Increased transaction fees", "Removal of EVM compatibility"], correct: 1 },
+            { question: "What was a focus of the IOTA Rebased test network update in December 2024?", options: ["Adding more centralized nodes", "Increasing the number of validators", "Reducing staking rewards", "Launching a new token"], correct: 1 },
+            { question: "What type of integration was highlighted for IOTA Rebased in March 2025?", options: ["Integration with traditional banking systems", "Ledger integration for wallet support", "Support for fiat currencies", "Removal of smart contracts"], correct: 1 }
+        ];
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = currentQuestion.question;
+            const optionsElement = document.getElementById("options");
+            optionsElement.innerHTML = "";
+            document.getElementById("feedback").style.display = "none";
+            document.getElementById("next-btn").style.display = "none";
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionButton = document.createElement("div");
+                optionButton.classList.add("option");
+                optionButton.textContent = option;
+                optionButton.addEventListener("click", () => checkAnswer(index));
+                optionsElement.appendChild(optionButton);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const feedbackElement = document.getElementById("feedback");
+            feedbackElement.style.display = "block";
+            if (selectedIndex === currentQuestion.correct) {
+                feedbackElement.textContent = "Correct!";
+                feedbackElement.style.color = "#90E0EF";
+                quizScore++;
+            } else {
+                feedbackElement.textContent = `Wrong! The correct answer was: ${currentQuestion.options[currentQuestion.correct]}`;
+                feedbackElement.style.color = "#FF6B6B";
+            }
+            document.getElementById("next-btn").style.display = "block";
+            const optionButtons = document.getElementsByClassName("option");
+            for (let button of optionButtons) {
+                button.style.pointerEvents = "none";
+            }
+        }
+
+        document.getElementById("next-btn").addEventListener("click", () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("quiz-container").style.display = "none";
+                document.getElementById("score").style.display = "block";
+                document.getElementById("score").textContent = `Quiz Score: ${quizScore}/${questions.length}`;
+                saveScore("quiz", quizScore);
+                updateTop10('quiz');
+            }
+        });
+
+        const memoryImages = [
+            { id: 1, src: "https://pbs.twimg.com/profile_images/1267400480734490624/uq3Cten-_400x400.jpg", name: "@IOTA" },
+            { id: 2, src: "https://pbs.twimg.com/profile_images/1897839088537157633/4uNc3CBr_400x400.jpg", name: "@KUTKRAFT" },
+            { id: 3, src: "https://pbs.twimg.com/profile_images/1490008172253392898/z6JVqunq_400x400.jpg", name: "@id_iota" },
+            { id: 4, src: "https://pbs.twimg.com/profile_images/1867537903091691525/Sjm8H3fd_400x400.jpg", name: "@PhyloIOTA" },
+            { id: 5, src: "https://pbs.twimg.com/profile_images/1639823618665226240/yVQrmWhl_400x400.jpg", name: "@MarkMalytschew" },
+            { id: 6, src: "https://pbs.twimg.com/profile_images/1871082170342645760/n-0GtgXk_400x400.jpg", name: "@DomSchiener" },
+            { id: 7, src: "https://pbs.twimg.com/profile_images/1877282657861545984/QXCCtR7G_400x400.jpg", name: "@Nightly_app" },
+            { id: 8, src: "https://pbs.twimg.com/profile_images/1876261964537581568/kLE50Mqq_400x400.png", name: "@DeeprFinance" },
+            { id: 9, src: "https://pbs.twimg.com/profile_images/1741529019093233664/g9mk8mYg_400x400.png", name: "@MagicSeaDEX" },
+            { id: 10, src: "https://pbs.twimg.com/profile_images/1453865643053182980/s9_nNOkD_400x400.jpg", name: "@StargateFinance" },
+            { id: 11, src: "https://pbs.twimg.com/profile_images/1765400587913326593/4yin1aKU_400x400.jpg", name: "@wagmicom" },
+            { id: 12, src: "https://pbs.twimg.com/profile_images/1805614841538707456/dI5erRPx_400x400.jpg", name: "@cyberperp" },
+            { id: 13, src: "https://pbs.twimg.com/profile_images/1689127977584660480/pX_tl20K_400x400.png", name: "@VelocimeterDEX" },
+            { id: 14, src: "https://pbs.twimg.com/profile_images/1805346325925384192/2FsT1FFp_400x400.jpg", name: "@iolendfi" },
+            { id: 15, src: "https://pbs.twimg.com/profile_images/1846083823240728579/_jeMlJZq_400x400.png", name: "Additional Image 1" },
+            { id: 16, src: "https://pbs.twimg.com/profile_images/1858646093153599488/mtDLTssy_400x400.jpg", name: "Additional Image 2" }
+        ];
+
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let memoryScore = 0;
+
+        function initMemoryGame() {
+            const memoryGame = document.getElementById("memory-game");
+            memoryGame.innerHTML = "";
+            memoryCards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            memoryScore = 0;
+            document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
+            document.getElementById("memory-back-btn").style.display = "block";
+            document.getElementById("memory-back-btn-end").style.display = "none";
+
+            const cardsToUse = [...memoryImages, ...memoryImages];
+            cardsToUse.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < 32; i++) {
+                const card = cardsToUse[i];
+                if (card) {
+                    const cardElement = document.createElement("div");
+                    cardElement.classList.add("memory-card");
+                    cardElement.dataset.id = card.id;
+                    cardElement.innerHTML = `<img src="${card.src}" alt="${card.name}">`;
+                    cardElement.addEventListener("click", () => flipCard(cardElement));
+                    memoryGame.appendChild(cardElement);
+                    memoryCards.push(cardElement);
+                }
+            }
+        }
+
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !flippedCards.includes(card) && !card.classList.contains("matched")) {
+                card.classList.add("flipped");
+                flippedCards.push(card);
+                memoryScore++;
+                document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.id === card2.dataset.id) {
+                card1.classList.add("matched");
+                card2.classList.add("matched");
+                matchedPairs++;
+                if (matchedPairs === 16) {
+                    setTimeout(() => {
+                        document.getElementById("memory-back-btn").style.display = "none";
+                        document.getElementById("memory-back-btn-end").style.display = "block";
+                        document.getElementById("score").style.display = "block";
+                        document.getElementById("score").textContent = `Memory Moves: ${memoryScore}`;
+                        saveScore("memory", memoryScore);
+                        updateTop10('memory');
+                    }, 500);
+                }
+            } else {
+                card1.classList.remove("flipped");
+                card2.classList.remove("flipped");
+            }
+            flippedCards = [];
+        }
+
+        let whackScore = 0;
+        let whackTimeLeft = 30;
+        let whackGameActive = false;
+        let lastFrameTime = 0;
+
+        function initWhackAMole() {
+            console.log("Initializing Whack-a-Mole");
+            const whackGame = document.getElementById("whack-a-mole-game");
+            const scoreDisplay = document.getElementById("whack-a-mole-score");
+            const timerDisplay = document.getElementById("whack-a-mole-timer");
+            const customCursor = document.getElementById("custom-cursor");
+            whackGame.innerHTML = "";
+            whackScore = 0;
+            whackTimeLeft = 30;
+            whackGameActive = false;
+            scoreDisplay.textContent = `Score: ${whackScore}`;
+            timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
+            customCursor.style.display = "none";
+            document.getElementById("whack-back-btn").style.display = "block";
+
+            for (let i = 0; i < 16; i++) {
+                const hole = document.createElement("div");
+                hole.classList.add("mole-hole");
+                hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Mole">';
+                whackGame.appendChild(hole);
+            }
+
+            let hammerX = 0, hammerY = 0;
+            function moveHammer(e) {
+                const rect = whackGame.getBoundingClientRect();
+                hammerX = e.clientX - rect.left;
+                hammerY = e.clientY - rect.top;
+                customCursor.style.left = `${hammerX}px`;
+                customCursor.style.top = `${hammerY}px`;
+                customCursor.style.display = "block";
+            }
+
+            whackGame.addEventListener("mousemove", moveHammer);
+            whackGame.addEventListener("mouseenter", () => customCursor.style.display = "block");
+            whackGame.addEventListener("mouseleave", () => customCursor.style.display = "none");
+
+            whackGame.addEventListener("click", (e) => {
+                if (!whackGameActive) return;
+
+                customCursor.classList.add("rotate");
+                setTimeout(() => customCursor.classList.remove("rotate"), 300);
+
+                const holes = document.getElementsByClassName("mole-hole");
+                for (let hole of holes) {
+                    if (hole.classList.contains("active")) {
+                        const holeRect = hole.getBoundingClientRect();
+                        const gameRect = whackGame.getBoundingClientRect();
+                        const holeX = holeRect.left - gameRect.left;
+                        const holeY = holeRect.top - gameRect.top;
+                        const hammerRect = {
+                            left: hammerX - 40,
+                            right: hammerX + 40,
+                            top: hammerY - 40,
+                            bottom: hammerY + 40
+                        };
+                        const holeArea = {
+                            left: holeX,
+                            right: holeX + 120,
+                            top: holeY,
+                            bottom: holeY + 120
+                        };
+
+                        if (hammerRect.right > holeArea.left && hammerRect.left < holeArea.right &&
+                            hammerRect.bottom > holeArea.top && hammerRect.top < holeArea.bottom) {
+                            whackScore++;
+                            scoreDisplay.textContent = `Score: ${whackScore}`;
+                            hole.classList.remove("active");
+                        }
+                    }
+                }
+            });
+
+            startWhackGame();
+        }
+
+        function startWhackGame() {
+            console.log("Starting Whack-a-Mole");
+            const scoreDisplay = document.getElementById("whack-a-mole-score");
+            const timerDisplay = document.getElementById("whack-a-mole-timer");
+            const customCursor = document.getElementById("custom-cursor");
+            whackScore = 0;
+            whackTimeLeft = 30;
+            whackGameActive = true;
+            scoreDisplay.textContent = `Score: ${whackScore}`;
+            timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
+            lastFrameTime = performance.now();
+
+            let moleTimer = 0;
+            let moleInterval = Math.random() * 500 + 500;
+
+            function gameLoop(currentTime) {
+                if (!whackGameActive) {
+                    customCursor.style.display = "none";
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
+                    document.getElementById("whack-back-btn").style.display = "block";
+                    saveScore("whack-a-mole", whackScore);
+                    updateTop10('whack-a-mole');
+                    return;
+                }
+
+                const deltaTime = (currentTime - lastFrameTime) / 1000;
+                lastFrameTime = currentTime;
+
+                whackTimeLeft -= deltaTime;
+                if (whackTimeLeft <= 0) {
+                    whackGameActive = false;
+                }
+                timerDisplay.textContent = `Time: ${Math.max(0, Math.floor(whackTimeLeft))}s`;
+
+                moleTimer += deltaTime * 1000;
+                if (moleTimer >= moleInterval) {
+                    const holes = document.getElementsByClassName("mole-hole");
+                    for (let hole of holes) hole.classList.remove("active");
+                    const randomHole = holes[Math.floor(Math.random() * holes.length)];
+                    randomHole.classList.add("active");
+                    moleTimer = 0;
+                    moleInterval = Math.random() * 500 + 500;
+                }
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        const snakeCanvas = document.getElementById("snake-canvas");
+        const snakeCtx = snakeCanvas.getContext("2d");
+        const snakeGridSize = 20;
+        const snakeTileCount = snakeCanvas.width / snakeGridSize;
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0;
+        let dy = 0;
+        let snakeScore = 0;
+        let snakeGameActive = false;
+        let snakeGameStarted = false;
+        let snakeInterval = null;
+
+        function initSnakeGame() {
+            console.log("Initializing Snake Game");
+            snake = [{ x: 10, y: 10 }];
+            food = { x: 15, y: 15 };
+            dx = 0;
+            dy = 0;
+            snakeScore = 0;
+            snakeGameActive = true;
+            snakeGameStarted = false;
+            document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
+            document.getElementById("snake-container").style.display = "flex";
+            snakeCanvas.style.display = "block";
+            document.getElementById("snake-back-btn").style.display = "none";
+            document.getElementById("snake-back-btn-during").style.display = "block";
+            document.addEventListener("keydown", changeDirection);
+            drawSnakeGame();
+        }
+
+        function startSnakeGame() {
+            console.log("Starting Snake Game Loop");
+            if (snakeInterval) clearInterval(snakeInterval);
+            snakeInterval = setInterval(() => {
+                if (!snakeGameActive) {
+                    console.log("Snake game stopped");
+                    return;
+                }
+                moveSnake();
+                drawSnakeGame();
+            }, 100);
+        }
+
+        function changeDirection(event) {
+            const key = event.key;
+            console.log("Key pressed:", key);
+
+            if (!snakeGameStarted && (key === "w" || key === "W" || key === "a" || key === "A" || key === "s" || key === "S" || key === "d" || key === "D")) {
+                snakeGameStarted = true;
+                startSnakeGame();
+            }
+
+            if (snakeGameActive) {
+                if (key === "ArrowUp" || key === "w" || key === "W") {
+                    if (dy !== 1) { dx = 0; dy = -1; }
+                } else if (key === "ArrowDown" || key === "s" || key === "S") {
+                    if (dy !== -1) { dx = 0; dy = 1; }
+                } else if (key === "ArrowLeft" || key === "a" || key === "A") {
+                    if (dx !== 1) { dx = -1; dy = 0; }
+                } else if (key === "ArrowRight" || key === "d" || key === "D") {
+                    if (dx !== -1) { dx = 1; dy = 0; }
+                }
+            }
+        }
+
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x < 0 || head.x >= snakeTileCount || head.y < 0 || head.y >= snakeTileCount) {
+                endSnakeGame();
+                return;
+            }
+
+            for (let i = 0; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endSnakeGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                snakeScore++;
+                document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function spawnFood() {
+            food.x = Math.floor(Math.random() * snakeTileCount);
+            food.y = Math.floor(Math.random() * snakeTileCount);
+
+            for (let i = 0; i < snake.length; i++) {
+                if (food.x === snake[i].x && food.y === snake[i].y) {
+                    spawnFood();
+                    break;
+                }
+            }
+        }
+
+        function drawSnakeGame() {
+            console.log("Drawing Snake Game");
+            snakeCtx.clearRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+            snakeCtx.fillStyle = "#00D4FF";
+            snake.forEach(segment => {
+                snakeCtx.fillRect(segment.x * snakeGridSize, segment.y * snakeGridSize, snakeGridSize - 2, snakeGridSize - 2);
+            });
+
+            snakeCtx.fillStyle = "#FF6B6B";
+            snakeCtx.beginPath();
+            snakeCtx.arc(food.x * snakeGridSize + snakeGridSize / 2, food.y * snakeGridSize + snakeGridSize / 2, snakeGridSize / 2 - 2, 0, Math.PI * 2);
+            snakeCtx.fill();
+
+            if (!snakeGameStarted) {
+                snakeCtx.fillStyle = "#FFFFFF";
+                snakeCtx.font = "20px Orbitron";
+                snakeCtx.fillText("Press W, A, S, or D to start", snakeCanvas.width / 2 - 120, snakeCanvas.height / 2);
+            }
+            if (!snakeGameActive) {
+                snakeCtx.fillStyle = "#FF6B6B";
+                snakeCtx.font = "30px Orbitron";
+                snakeCtx.fillText("Game Over!", snakeCanvas.width / 2 - 80, snakeCanvas.height / 2);
+            }
+        }
+
+        function endSnakeGame() {
+            console.log("Ending Snake Game");
+            snakeGameActive = false;
+            clearInterval(snakeInterval);
+            document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
+            document.getElementById("score").style.display = "block";
+            document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
+            document.getElementById("snake-back-btn-during").style.display = "none";
+            document.getElementById("snake-back-btn").style.display = "block";
+            saveScore("snake", snakeScore);
+            updateTop10('snake');
+            drawSnakeGame();
+        }
+
+        const flappyCanvas = document.getElementById("flappy-frog-canvas");
+        const flappyCtx = flappyCanvas.getContext("2d");
+        let frogY = flappyCanvas.height / 2;
+        let gravity = 0.5;
+        let velocity = 0;
+        let gameOver = false;
+        let flappyScore = 0;
+        let pipes = [];
+        let frameCount = 0;
+        let gameStarted = false;
+
+        function initFlappyFrog() {
+            frogY = flappyCanvas.height / 2;
+            velocity = 0;
+            gameOver = false;
+            flappyScore = 0;
+            pipes = [];
+            document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
+            document.getElementById("play-button").style.display = "block";
+            document.getElementById("flappy-back-btn").style.display = "block";
+            document.removeEventListener("keydown", jump);
+            document.removeEventListener("click", jump);
+            drawFlappyGame();
+        }
+
+        function startFlappyGame() {
+            gameStarted = true;
+            document.getElementById("play-button").style.display = "none";
+            document.getElementById("flappy-back-btn").style.display = "block";
+            document.addEventListener("keydown", jump);
+            document.addEventListener("click", jump);
+            const gameLoop = setInterval(() => {
+                if (gameOver) {
+                    clearInterval(gameLoop);
+                    document.getElementById("flappy-frog-container").style.display = "block";
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Flappy Frog Score: ${flappyScore}`;
+                    document.getElementById("flappy-back-btn").style.display = "block";
+                    saveScore("flappy-frog", flappyScore);
+                    updateTop10('flappy-frog');
+                    return;
+                }
+
+                frameCount++;
+                if (frameCount % 100 === 0) {
+                    const pipeGap = 150;
+                    const pipeHeight = Math.random() * (flappyCanvas.height - pipeGap - 100) + 50;
+                    pipes.push({
+                        x: flappyCanvas.width,
+                        topHeight: pipeHeight,
+                        bottomHeight: flappyCanvas.height - pipeHeight - pipeGap
+                    });
+                }
+
+                velocity += gravity;
+                frogY += velocity;
+
+                pipes = pipes.filter(pipe => pipe.x > -50);
+                pipes.forEach(pipe => pipe.x -= 2);
+
+                if (frogY > flappyCanvas.height || frogY < 0) {
+                    gameOver = true;
+                }
+
+                pipes.forEach(pipe => {
+                    if (
+                        (flappyCanvas.width / 2 > pipe.x && flappyCanvas.width / 2 < pipe.x + 50) &&
+                        (frogY < pipe.topHeight || frogY > flappyCanvas.height - pipe.bottomHeight)
+                    ) {
+                        gameOver = true;
+                    }
+                    if (flappyCanvas.width / 2 > pipe.x + 50 && flappyCanvas.width / 2 < pipe.x + 60) {
+                        flappyScore++;
+                        document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
+                    }
+                });
+
+                drawFlappyGame();
+            }, 16);
+        }
+
+        function jump() {
+            if (gameStarted && !gameOver) {
+                velocity = -8;
+            }
+        }
+
+        function drawFlappyGame() {
+            flappyCtx.clearRect(0, 0, flappyCanvas.width, flappyCanvas.height);
+
+            if (!gameStarted) {
+                flappyCtx.fillStyle = "#FFFFFF";
+                flappyCtx.font = "30px Orbitron";
+                flappyCtx.fillText("Click Play to Start", flappyCanvas.width / 2 - 120, flappyCanvas.height / 2);
+                return;
+            }
+
+            flappyCtx.fillStyle = "#90EE90";
+            flappyCtx.beginPath();
+            flappyCtx.arc(flappyCanvas.width / 2, frogY, 20, 0, Math.PI * 2);
+            flappyCtx.fill();
+            flappyCtx.fillStyle = "#000000";
+            flappyCtx.fillText("🐸", flappyCanvas.width / 2 - 10, frogY + 5);
+
+            flappyCtx.fillStyle = "#00D4FF";
+            pipes.forEach(pipe => {
+                flappyCtx.fillRect(pipe.x, 0, 50, pipe.topHeight);
+                flappyCtx.fillRect(pipe.x, flappyCanvas.height - pipe.bottomHeight, 50, pipe.bottomHeight);
+            });
+
+            if (gameOver) {
+                flappyCtx.fillStyle = "#FF6B6B";
+                flappyCtx.font = "30px Orbitron";
+                flappyCtx.fillText("Game Over!", flappyCanvas.width / 2 - 80, flappyCanvas.height / 2);
+            }
+        }
+
+        async function saveScore(gameType, gameScore) {
+            try {
+                const response = await fetch('http://localhost:3000/api/save-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nickname,
+                        gameType,
+                        score: gameScore,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save score');
+                }
+
+                console.log(`Score saved for ${nickname} in ${gameType}: ${gameScore}`);
+            } catch (error) {
+                console.error('Error saving score:', error);
+            }
+        }
+
+        async function updateTop10(activeTab) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/top10?gameType=${activeTab}`);
+                const top10 = await response.json();
+
+                const top10List = document.getElementById("top-10-list");
+                top10List.innerHTML = "";
+
+                top10.forEach(entry => {
+                    const li = document.createElement("li");
+                    if (entry.gameType === "quiz") {
+                        li.textContent = `${entry.nickname}: ${entry.score}/${questions.length}`;
+                    } else if (entry.gameType === "memory") {
+                        li.textContent = `${entry.nickname}: ${entry.score} moves`;
+                    } else if (entry.gameType === "whack-a-mole") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    } else if (entry.gameType === "snake") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    } else if (entry.gameType === "flappy-frog") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    }
+                    top10List.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching top 10:', error);
+            }
+        }
+
+        async function showFullRanking() {
+            try {
+                const response = await fetch('http://localhost:3000/api/full-ranking');
+                const rankings = await response.json();
+
+                const fullRankingList = document.getElementById("full-ranking-list");
+                fullRankingList.innerHTML = "";
+
+                rankings.forEach(entry => {
+                    const li = document.createElement("li");
+                    if (entry.gameType === "quiz") {
+                        li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
+                    } else if (entry.gameType === "memory") {
+                        li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
+                    } else if (entry.gameType === "whack-a-mole") {
+                        li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                    } else if (entry.gameType === "snake") {
+                        li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
+                    } else if (entry.gameType === "flappy-frog") {
+                        li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
+                    }
+                    fullRankingList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching full ranking:', error);
+            }
+        }
+
+        function showTab(gameType) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().replace(' ', '-') === gameType) {
+                    tab.classList.add('active');
+                }
+            });
+            updateTop10(gameType);
+        }
+
+        function showSection(section) {
+            document.getElementById("quiz-container").style.display = "none";
+            document.getElementById("memory-container").style.display = "none";
+            document.getElementById("whack-a-mole-container").style.display = "none";
+            document.getElementById("snake-container").style.display = "none";
+            document.getElementById("flappy-frog-container").style.display = "none";
+            document.getElementById("full-ranking-container").style.display = "none";
+            document.getElementById("score").style.display = "none";
+            document.getElementById("game-buttons").style.display = "none";
+            document.getElementById("top-10-container").style.display = "none";
+
+            if (section === "main") {
+                if (snakeGameActive) {
+                    snakeGameActive = false;
+                    clearInterval(snakeInterval);
+                }
+                if (whackGameActive) {
+                    whackGameActive = false;
+                    document.getElementById("custom-cursor").style.display = "none";
+                }
+                document.getElementById("game-buttons").style.display = "flex";
+                document.getElementById("top-10-container").style.display = "block";
+                showTab('quiz');
+            } else if (section === "quiz") {
+                document.getElementById("quiz-container").style.display = "block";
+                currentQuestionIndex = 0;
+                quizScore = 0;
+                loadQuestion();
+            } else if (section === "memory") {
+                document.getElementById("memory-container").style.display = "block";
+                initMemoryGame();
+            } else if (section === "whack-a-mole") {
+                document.getElementById("whack-a-mole-container").style.display = "block";
+                initWhackAMole();
+            } else if (section === "snake") {
+                document.getElementById("snake-container").style.display = "flex";
+                initSnakeGame();
+            } else if (section === "flappy-frog") {
+                document.getElementById("flappy-frog-container").style.display = "block";
+                initFlappyFrog();
+            } else if (section === "full-ranking") {
+                document.getElementById("full-ranking-container").style.display = "block";
+                showFullRanking();
+            }
+        }
+    </script>
+</body>
+</html>
