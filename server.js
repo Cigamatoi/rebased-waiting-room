@@ -1,14 +1,40 @@
 const express = require('express');
+const fs = require('fs').promises; // Für Dateioperationen
+const path = require('path');
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
-// In-memory storage (replace with a database in production)
 let rankings = [];
 
-app.post('/api/save-score', (req, res) => {
+async function loadRankings() {
+    try {
+        const data = await fs.readFile('highscores.json', 'utf8');
+        rankings = JSON.parse(data);
+    } catch (err) {
+        console.log('No highscores file found, starting fresh.');
+        rankings = [];
+    }
+}
+
+async function saveRankings() {
+    try {
+        await fs.writeFile('highscores.json', JSON.stringify(rankings, null, 2));
+    } catch (err) {
+        console.error('Error saving rankings:', err);
+    }
+}
+
+// Lade Rankings beim Serverstart
+loadRankings();
+
+app.post('/api/save-score', async (req, res) => {
     const { nickname, gameType, score } = req.body;
+
+    // Debugging: Logge den eingehenden Request
+    console.log('Received score:', { nickname, gameType, score });
 
     // Remove existing entry for this nickname and gameType
     rankings = rankings.filter(entry => !(entry.nickname === nickname && entry.gameType === gameType));
@@ -16,26 +42,17 @@ app.post('/api/save-score', (req, res) => {
     // Add new score
     rankings.push({ nickname, gameType, score });
 
-    // Sort rankings (memory sorts ascending, others descending)
+    // Sort rankings
     rankings.sort((a, b) => {
         if (a.gameType === "memory" && b.gameType === "memory") return a.score - b.score;
         return b.score - a.score;
     });
 
+    // Speichere in highscores.json
+    await saveRankings();
+
     res.status(200).send({ message: 'Score saved successfully' });
 });
 
 app.get('/api/top10', (req, res) => {
-    const { gameType } = req.query;
-    const filteredRankings = rankings.filter(entry => entry.gameType === gameType);
-    const top10 = filteredRankings.slice(0, 10);
-    res.json(top10);
-});
-
-app.get('/api/full-ranking', (req, res) => {
-    res.json(rankings);
-});
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+    const {
